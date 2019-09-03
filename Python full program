@@ -1,0 +1,104 @@
+
+### Capturing image 
+import cv2 
+
+key = cv2. waitKey(1)
+webcam = cv2.VideoCapture(0)
+while True:
+     
+    check, frame = webcam.read()
+    #print(check) #prints true as long as the webcam is running
+    #print(frame) #prints matrix values of each framecd 
+    cv2.imshow("Capturing", frame)
+    key = cv2.waitKey(1)
+    if key == ord('s'): 
+        cv2.imwrite(filename='saved_img.jpg', img=frame)
+        webcam.release()
+        #img_new = cv2.imread('saved_img.jpg', cv2.IMREAD_GRAYSCALE)
+        #img_new = cv2.imshow("Captured Image", img_new)
+        cv2.waitKey(1650)
+        cv2.destroyAllWindows()
+        #print("Processing image...")
+        #img_ = cv2.imread('saved_img.jpg', cv2.IMREAD_ANYCOLOR)
+        #print("Converting RGB image to grayscale...")
+        #gray = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
+        #print("Converted RGB image to grayscale...")
+        #print("Resizing image to 28x28 scale...")
+        #img_ = cv2.resize(gray,(28,28))
+        #print("Resized...")
+        #img_resized = cv2.imwrite(filename='saved_img-final.jpg', img=img_)
+        print("Image saved!")
+     
+        break
+    elif key == ord('q'):
+        print("Turning off camera.")
+        webcam.release()
+        print("Camera off.")
+        print("Program ended.")
+        cv2.destroyAllWindows()
+        break
+
+
+
+
+
+
+### Finding objects in the image using ObjectDetection in imageai
+
+from imageai.Detection import ObjectDetection
+import os
+
+execution_path = os.getcwd()
+
+detector = ObjectDetection()
+detector.setModelTypeAsRetinaNet()
+detector.setModelPath( os.path.join(execution_path , "resnet50_coco_best_v2.0.1.h5")) ### The path is for pretrained weight values
+detector.loadModel()
+detections = detector.detectObjectsFromImage(input_image=os.path.join(execution_path , "saved_img.jpg"), output_image_path=os.path.join(execution_path , "imagenew.jpg"))
+for eachObject in detections:
+    print(eachObject["name"] , " : " , eachObject["percentage_probability"] )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Sending the found objects in string to arduino in the form of braille characters
+
+import time
+import serial 
+
+
+
+ardser = serial.Serial('com3',9600)  
+print(ardser.readline())              
+print("Enter the string to output in braille")
+def string1(ch):
+      ch=ch.lower()
+      arr={'a':'100000','b':'110000','c':'100100','d':'100110','e':'100010','f':'110100','g':'110110','h':'110010','i':'010100','j':'010110','k':'101000','l':'111000','m':'101100','n':'101110','o':'101010','p':'111100','q':'111110','r':'111010','s':'011100','t':'011110','u':'101001','v':'111001','w':'010111','x':'101101','y':'101111','z':'101011',' ':'000000'}   
+      return arr[ch]
+while 1:                              
+    input_data = input()              
+    print("you entered", input_data)  
+    str1=""
+    for i in range(0,len(input_data)):
+        str1=string1(input_data[i])
+        for j in range(1,len(str1)+1):
+            if (str1[j-1] == '1'):    
+                ardser.write(str(j).encode('ASCII'))
+                #print ("LED ON")
+            #else:                   #if the entered data is 0
+             #   ardser.write('0'.encode('ASCII'))             #send 0 to arduino 
+                #print ("LED OFF")
+            
+        time.sleep(1)
+        ardser.write('0'.encode('ASCII'))
+ardser.close()
