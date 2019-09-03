@@ -1,0 +1,20 @@
+i. Tensorflow
+conda install tensorflow
+ii. Numpy
+conda install numpy
+iii. SciPy
+conda install scipy
+iv. OpenCV
+conda install opencv-python
+v. Pillow
+conda install pillow
+vi. Matplotlib
+conda install matplotlib
+vii. H5py
+conda install h5py
+viii. Keras
+conda install keras
+ix. ImageAI
+conda3 install imageai --upgrade
+conda install https://github.com/OlafenwaMoses/ImageAI/releases/download/2.0.3/imageai-2.0.3-py3-none-any.whl
+
